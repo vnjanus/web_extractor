@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import { marked } from 'marked';
 import { WebTextExtractor } from './extractor';
 
 const app = express();
@@ -43,6 +44,23 @@ app.post('/extract', async (req, res) => {
 
     // Extract text
     const result = await extractor.extractText(url);
+    
+    // If extraction was successful, parse markdown to HTML
+    if (result.success && result.markdown) {
+      try {
+        // Configure marked to preserve line breaks
+        marked.use({
+          breaks: true, // Convert line breaks to <br>
+          gfm: true     // Enable GitHub flavored markdown
+        });
+        
+        result.html = await marked(result.markdown);
+      } catch (parseError) {
+        console.error('Markdown parsing error:', parseError);
+        // Continue without HTML if parsing fails
+      }
+    }
+    
     res.json(result);
 
   } catch (error) {

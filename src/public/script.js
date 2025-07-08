@@ -8,11 +8,15 @@ class WebTextExtractorUI {
         this.results = document.getElementById('results');
         this.error = document.getElementById('error');
         this.textOutput = document.getElementById('textOutput');
+        this.htmlOutput = document.getElementById('htmlOutput');
         this.urlDisplay = document.getElementById('urlDisplay');
         this.timestamp = document.getElementById('timestamp');
         this.copyBtn = document.getElementById('copyBtn');
         this.downloadBtn = document.getElementById('downloadBtn');
         this.errorMessage = document.getElementById('errorMessage');
+        
+        // Store the raw markdown for copy/download
+        this.rawMarkdown = '';
 
         this.bindEvents();
     }
@@ -67,7 +71,20 @@ class WebTextExtractorUI {
     }
 
     showResults(result) {
-        this.textOutput.textContent = result.text || 'No text content found';
+        // Store raw markdown for copy/download
+        this.rawMarkdown = result.markdown || result.text || 'No text content found';
+        
+        // Display HTML if available, otherwise fallback to text
+        if (result.html) {
+            this.htmlOutput.innerHTML = result.html;
+            this.htmlOutput.style.display = 'block';
+            this.textOutput.style.display = 'none';
+        } else {
+            this.textOutput.textContent = this.rawMarkdown;
+            this.textOutput.style.display = 'block';
+            this.htmlOutput.style.display = 'none';
+        }
+        
         this.urlDisplay.textContent = `URL: ${result.url}`;
         this.timestamp.textContent = `Extracted: ${new Date(result.timestamp).toLocaleString()}`;
         this.results.style.display = 'block';
@@ -92,7 +109,7 @@ class WebTextExtractorUI {
 
     async copyToClipboard() {
         try {
-            await navigator.clipboard.writeText(this.textOutput.textContent);
+            await navigator.clipboard.writeText(this.rawMarkdown);
             
             // Visual feedback
             const originalText = this.copyBtn.textContent;
@@ -109,14 +126,14 @@ class WebTextExtractorUI {
     }
 
     downloadText() {
-        const text = this.textOutput.textContent;
+        const text = this.rawMarkdown;
         const url = this.urlDisplay.textContent.replace('URL: ', '');
         const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
         
-        const filename = `extracted-text-${timestamp}.txt`;
+        const filename = `extracted-text-${timestamp}.md`;
         const content = `URL: ${url}\nExtracted: ${new Date().toLocaleString()}\n\n${text}`;
         
-        const blob = new Blob([content], { type: 'text/plain' });
+        const blob = new Blob([content], { type: 'text/markdown' });
         const downloadUrl = URL.createObjectURL(blob);
         
         const a = document.createElement('a');
