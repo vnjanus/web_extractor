@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Text Extractor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕷️ Web Text Extractor</h1>
+            <p>Extract text content from any webpage using Playwright</p>
+        </header>
+
+        <main>
+            <form id="extractForm" class="extract-form">
+                <div class="input-group">
+                    <label for="urlInput">Website URL:</label>
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="https://example.com" 
+                        required
+                    >
+                    <button type="submit" id="extractBtn">
+                        <span class="btn-text">Extract Text</span>
+                        <span class="loading" style="display: none;">Extracting...</span>
+                    </button>
+                </div>
+            </form>
+
+            <div id="results" class="results" style="display: none;">
+                <div class="results-header">
+                    <h3>Extracted Text</h3>
+                    <div class="results-meta">
+                        <span id="urlDisplay"></span>
+                        <span id="timestamp"></span>
+                    </div>
+                </div>
+                <div class="text-content">
+                    <pre id="textOutput"></pre>
+                </div>
+                <div class="actions">
+                    <button id="copyBtn" class="secondary-btn">Copy to Clipboard</button>
+                    <button id="downloadBtn" class="secondary-btn">Download as .txt</button>
+                </div>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <h3>⚠️ Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
